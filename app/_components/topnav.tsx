@@ -1,7 +1,8 @@
+import { forwardRef } from "react"
 
-export default function TopNav() {
+const TopNav = forwardRef<HTMLElement>((props ,ref) => {
     return (
-        <nav>
+        <nav ref={ref}>
             <div className="nav-links">
                 <a href="#">Overview</a>
                 <a href="#">Solutions</a>
@@ -16,4 +17,6 @@ export default function TopNav() {
             </div>
         </nav>
     )
-}
+})
+
+export default TopNav;

@@ -24,11 +24,11 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
     return (
         <html lang="en"
         className={`${inter.variable} ${belleza.variable}`}>
             <body>
-                <TopNav />
                 {children}
             </body>
         </html>
