@@ -1,8 +1,37 @@
 import Image from "next/image";
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-    </div>
-  );
+    return (
+        <>
+            <div className="container">
+                <section className="hero">
+                    <canvas></canvas>
+
+                    <div className="hero-content">
+                        <div className="header">
+                            <h1>Where Beauty Begins</h1>
+                            <p>Trusted by</p>
+                            <div className="client-logos">
+                                <div className="client-logo">
+                                    <div className="client-logo"><img src="/clients/client-logo-1.svg" alt="img1" /></div>
+                                    <div className="client-logo"><img src="/clients/client-logo-2.svg" alt="img2" /></div>
+                                    <div className="client-logo"><img src="/clients/client-logo-3.svg" alt="img3" /></div>
+                                    <div className="client-logo"><img src="/clients/client-logo-4.svg" alt="img4" /></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="hero-img-container">
+                        <div className="hero-img"><img src="/dashboard.png" alt="dashboard" /></div>
+                    </div>
+                </section>
+
+                <section className="outro">
+                    <h1>Experience beauty in its most refined form. At Chloe,
+                        every detail is designed to elevate your confidence
+                        and celebrate your natural glow.</h1>
+                </section>
+            </div>
+        </>
+    );
 }
