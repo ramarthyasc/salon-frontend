@@ -8,7 +8,7 @@ export default function TopNav() {
                 <a href="#">Resources</a>
             </div>
             <div className="logo">
-                <a href="#"><img src="/logo.jpeg" alt="logo" />Salon</a>
+                <a href="#"><img src="/logo.jpeg" alt="logo" /></a>
             </div>
             <div className="nav-buttons">
                 <div className="btn primary"><a href="#">Live Demo</a></div>

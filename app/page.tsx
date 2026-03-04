@@ -1,12 +1,13 @@
-import Image from "next/image";
+// import Image from "next/image";
 
 export default function Home() {
     return (
+        // only the divs & section (block elements) are given styles. 
+        // So put every style inside div
         <>
             <div className="container">
                 <section className="hero">
                     <canvas></canvas>
-
                     <div className="hero-content">
                         <div className="header">
                             <h1>Where Beauty Begins</h1>
@@ -27,9 +28,7 @@ export default function Home() {
                 </section>
 
                 <section className="outro">
-                    <h1>Experience beauty in its most refined form. At Chloe,
-                        every detail is designed to elevate your confidence
-                        and celebrate your natural glow.</h1>
+                    <h1>Experience modern beauty at Chloe</h1>
                 </section>
             </div>
         </>
