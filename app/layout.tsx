@@ -2,16 +2,30 @@ import type { Metadata } from "next";
 import { Belleza, Inter } from "next/font/google";
 import TopNav from "./_components/topnav";
 import "./globals.css";
+import Loading from "./loading";
+import { Playfair_Display, Great_Vibes } from "next/font/google";
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-playfair",
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-greatvibes",
+});
 
 const belleza = Belleza({
-  variable: "--font-belleza",
-  weight: "400",
-  subsets: ["latin"],
+    variable: "--font-belleza",
+    weight: "400",
+    subsets: ["latin"],
 });
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+    variable: "--font-inter",
+    subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -27,10 +41,10 @@ export default function RootLayout({
 
     return (
         <html lang="en"
-        className={`${inter.variable} ${belleza.variable}`}>
+            className={`${inter.variable} ${belleza.variable} ${playfair.variable} ${greatVibes.variable}`}>
             <body>
-                {children}
-            </body>
-        </html>
+            {children}
+        </body>
+        </html >
     );
 }

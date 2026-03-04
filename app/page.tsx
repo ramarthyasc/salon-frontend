@@ -3,7 +3,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import ReactLenis, { LenisRef, useLenis } from "lenis/react";
 import { useGSAP } from "@gsap/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import TopNav from "./_components/topnav";
 
 // import Image from "next/image";
@@ -14,10 +14,15 @@ export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const headerRef = useRef<HTMLDivElement | null>(null);
     const heroimgRef = useRef<HTMLDivElement | null>(null);
+    const heroimg1Ref = useRef<HTMLDivElement | null>(null);
+    const heroimg2Ref = useRef<HTMLDivElement | null>(null);
+    const heroimg3Ref = useRef<HTMLDivElement | null>(null);
+    const heroimg4Ref = useRef<HTMLDivElement | null>(null);
     const navRef = useRef<HTMLElement | null>(null);
     const lenisRef = useRef<LenisRef>(null);
     const frameCountRef = useRef(405);
     const imagesRef = useRef<HTMLImageElement[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const lenis = useLenis();
 
@@ -64,6 +69,7 @@ export default function Home() {
             if (!imagesToLoad) {
                 render();
                 setupScrollTrigger();
+                setIsLoading(false);
             }
         }
 
@@ -111,6 +117,63 @@ export default function Home() {
             }
         }
         // image loading and first image rendering is done
+        function animateHeroImage(
+            ref: React.RefObject<HTMLDivElement | null>,
+            progress: number,
+            start: number
+        ) {
+
+            const flyInEnd = start + 0.05
+            const holdEnd = start + 0.07
+            const end = start + 0.1
+
+            if (progress < start) {
+
+                gsap.set(ref.current, {
+                    transform: "translateZ(1000px)",
+                    opacity: 0
+                })
+
+            } else if (progress >= start && progress <= flyInEnd) {
+
+                // Fly In
+                const p = (progress - start) / 0.05
+                const translateZ = 1000 - p * 1000
+                const opacity = p
+
+                gsap.set(ref.current, {
+                    transform: `translateZ(${translateZ}px)`,
+                    opacity
+                })
+
+            } else if (progress > flyInEnd && progress <= holdEnd) {
+
+                // Hold
+                gsap.set(ref.current, {
+                    transform: "translateZ(0px)",
+                    opacity: 1
+                })
+
+            } else if (progress > holdEnd && progress <= end) {
+
+                // Shoot Back + Fade
+                const p = (progress - holdEnd) / 0.03
+                const translateZ = -1000 * p
+                const opacity = 1 - p
+
+                gsap.set(ref.current, {
+                    transform: `translateZ(${translateZ}px)`,
+                    opacity
+                })
+
+            } else {
+
+                gsap.set(ref.current, {
+                    transform: "translateZ(-1000px)",
+                    opacity: 0
+                })
+            }
+        }
 
         // dynamic image rendering
         const setupScrollTrigger = () => {
@@ -124,13 +187,89 @@ export default function Home() {
                 onUpdate: (self) => {
                     const progress = self.progress;
 
-                    const animationProgress = Math.min(progress/0.9, 1);
+                    const animationProgress = Math.min(progress / 0.9, 1);
 
                     const targetFrame = Math.round(animationProgress * (frameCount - 1));
                     videoFrames.frame = targetFrame;
                     render();
+
+                    if (progress < 0.1) {
+                        const navProgress = progress / 0.1;
+                        const opacity = 1 - navProgress;
+
+                        gsap.set(navRef.current, { opacity });
+                    } else {
+                        gsap.set(navRef.current, { opacity: 0 });
+                    }
+
+                    if (progress < 0.20) {
+                        const zProgress = progress / 0.25;
+                        const translateZ = zProgress * -500;
+
+                        let opacity = 1;
+                        if (progress < 0.15) {
+                            const fadeProgress = Math.min((progress - 0.15) / (0.20 - 0.15), 1);
+                            opacity = 1 - fadeProgress;
+                        }
+
+                        gsap.set(headerRef.current, {
+                            transform: `translate(-50%, -50%) translateZ(${translateZ}px)`,
+                            opacity,
+                        })
+                    } else {
+                        gsap.set(headerRef.current, {
+                            opacity: 0
+                        })
+                    }
+
+                    animateHeroImage(heroimg1Ref, progress, 0.15)
+                    animateHeroImage(heroimg2Ref, progress, 0.30)
+                    animateHeroImage(heroimg3Ref, progress, 0.45)
+                    animateHeroImage(heroimg4Ref, progress, 0.60)
+
+
+                    if (progress < 0.8) {
+                        gsap.set(heroimgRef.current, {
+                            transform: "translateZ(1000px)",
+                            opacity: 0
+                        })
+                    } else if (progress >= 0.8 && progress <= 0.9) {
+                        const imgProgress = (progress - 0.8) / 0.1;
+
+                        const translateZ = 1000 - imgProgress * 1000;
+
+                        let opacity = 0;
+                        if (progress <= 0.90) {
+                            const opacityProgress = (progress - 0.80) / 0.1;
+                            opacity = opacityProgress;
+                        } else {
+                            opacity = 1;
+                        }
+
+                        gsap.set(heroimgRef.current, {
+                            transform: `translateZ(${translateZ}px)`,
+                            opacity
+                        })
+                    } else {
+                        gsap.set(heroimgRef.current, {
+                            transform: "translateZ(0px)",
+                            opacity: 1
+                        })
+                    }
                 }
             })
+        }
+
+        function reset() {
+            setCanvasSize();
+            render();
+            ScrollTrigger.refresh();
+        }
+
+        window.addEventListener("resize", reset);
+
+        return () => {
+            removeEventListener("resize", reset);
         }
 
 
@@ -141,7 +280,7 @@ export default function Home() {
         // only the divs & section (block elements) are given styles. 
         // So put every style inside div
         <>
-            <ReactLenis root options={{lerp: 0.1, autoRaf: true }} ref={lenisRef}>
+            <ReactLenis root options={{ lerp: 0.1, autoRaf: true }} ref={lenisRef}>
                 <TopNav ref={navRef} />
                 <div className="container" ref={containerRef} >
                     <section className="hero">
@@ -149,26 +288,74 @@ export default function Home() {
 
                         <div className="hero-content">
                             <div className="header" ref={headerRef}>
-                                <h1>Where Beauty Begins</h1>
-                                <p>Trusted by</p>
-                                <div className="client-logos">
-                                    <div className="client-logo"><img src="/clients/client-logo-1.svg" alt="img1" /></div>
-                                    <div className="client-logo"><img src="/clients/client-logo-2.svg" alt="img2" /></div>
-                                    <div className="client-logo"><img src="/clients/client-logo-3.svg" alt="img3" /></div>
-                                    <div className="client-logo"><img src="/clients/client-logo-4.svg" alt="img4" /></div>
-                                </div>
+                                {/* <h1>Beauty by Chloe</h1> */}
+                                {/* <p>Loved by</p> */}
+                                {/* <div className="client-logos"> */}
+                                {/*     <div className="client-logo"><img src="/clients/client-logo-1.svg" alt="img1" /></div> */}
+                                {/*     <div className="client-logo"><img src="/clients/client-logo-2.svg" alt="img2" /></div> */}
+                                {/*     <div className="client-logo"><img src="/clients/client-logo-3.svg" alt="img3" /></div> */}
+                                {/*     <div className="client-logo"><img src="/clients/client-logo-4.svg" alt="img4" /></div> */}
+                                {/* </div> */}
                             </div>
                         </div>
                         <div className="hero-img-container">
                             <div className="hero-img" ref={heroimgRef}><img src="/dashboard.png" alt="dashboard" /></div>
                         </div>
+                        <div className="hero-img-container">
+                            <div className="hero-img1" ref={heroimg1Ref}><img src="/dashboard1.png" alt="dashboard1" /></div>
+                        </div>
+                        <div className="hero-img-container">
+                            <div className="hero-img2" ref={heroimg2Ref}><img src="/dashboard2.png" alt="dashboard2" /></div>
+                        </div>
+                        <div className="hero-img-container">
+                            <div className="hero-img3" ref={heroimg3Ref}><img src="/dashboard3.png" alt="dashboard3" /></div>
+                        </div>
+                        <div className="hero-img-container">
+                            <div className="hero-img4" ref={heroimg4Ref}><img src="/dashboard4.png" alt="dashboard4" /></div>
+                        </div>
                     </section>
 
-                    <section className="outro">
-                        <h1>Experience modern beauty at Chloe</h1>
-                    </section>
+                    {/* <section className="outro"> */}
+                    {/*     <h1>Experience modern beauty at Chloe</h1> */}
+                    {/* </section> */}
+                </div>
+
+
+                {/* Loading overlay */}
+                <div className={`loading-overlay ${isLoading ? "active" : "fade-out"}`}>
+                    <h1 className="brand-title">
+                        Beauty <span className="brand-script">by Chloe</span>
+                    </h1>
+                    <span>    </span>
+                    <svg
+                        width="50"
+                        height="50"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <style>
+                            {`
+          .spinner_9y7u{animation:spinner_fUkk 2.4s linear infinite;animation-delay:-2.4s}
+          .spinner_DF2s{animation-delay:-1.6s}
+          .spinner_q27e{animation-delay:-0.8s}
+          @keyframes spinner_fUkk{
+            8.33%{x:13px;y:1px}
+            25%{x:13px;y:1px}
+            33.3%{x:13px;y:13px}
+            50%{x:13px;y:13px}
+            58.33%{x:1px;y:13px}
+            75%{x:1px;y:13px}
+            83.33%{x:1px;y:1px}
+          }
+        `}
+                        </style>
+                        <rect className="spinner_9y7u" x="1" y="1" rx="1" width="10" height="10" />
+                        <rect className="spinner_9y7u spinner_DF2s" x="1" y="1" rx="1" width="10" height="10" />
+                        <rect className="spinner_9y7u spinner_q27e" x="1" y="1" rx="1" width="10" height="10" />
+                    </svg>
                 </div>
             </ReactLenis>
+
         </>
     );
 }
