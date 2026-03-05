@@ -186,6 +186,11 @@ export default function Home() {
                 scrub: 1,
                 onUpdate: (self) => {
                     const progress = self.progress;
+                    const velocity = Math.abs(self.getVelocity()); // absolute velocity
+                    console.log(velocity);
+
+                    const velocityThreshold = 80; // tweak this value to what feels right
+                    if (velocity < velocityThreshold) { return;}
 
                     const animationProgress = Math.min(progress / 0.9, 1);
 
@@ -326,7 +331,6 @@ export default function Home() {
                     <h1 className="brand-title">
                         Beauty <span className="brand-script">by Chloe</span>
                     </h1>
-                    <span>    </span>
                     <svg
                         width="50"
                         height="50"
